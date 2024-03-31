@@ -27,7 +27,7 @@ const craftSchema = Joi.object({
 });
 
 // In-memory "database" for crafts
-let crafts = crafts = [
+let crafts = [
     {
         "name": "Beaded JellyFish",
         "image": "bead-jellyfish.jpg",
