@@ -7,7 +7,6 @@ const fs = require("fs");
 const app = express();
 app.use(express.static('public'));
 
-// Multer setup for file uploads
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'uploads/');
@@ -19,7 +18,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Joi schema for craft validation
 const craftSchema = Joi.object({
     craftName: Joi.string().required(),
     craftDescription: Joi.string().required(),
