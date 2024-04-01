@@ -295,6 +295,7 @@ app.get("/api/crafts", (req, res) => {
     res.send(crafts);
 });
 
+
 app.post("/api/crafts", upload.single('craftImage'), (req, res) => {
     const validationResult = craftSchema.validate(req.body, { convert: false });
     if (validationResult.error) {
