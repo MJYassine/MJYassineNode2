@@ -1,3 +1,4 @@
+
 const express = require("express");
 const multer = require("multer");
 const Joi = require("joi");
@@ -7,9 +8,12 @@ const fs = require("fs");
 const app = express();
 app.use(express.static('public'));
 
+const uploadDir = 'uploads/';
+fs.existsSync(uploadDir) || fs.mkdirSync(uploadDir);
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'uploads/');
+        cb(null, uploadDir);
     },
     filename: function(req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
@@ -24,7 +28,6 @@ const craftSchema = Joi.object({
     supplies: Joi.array().items(Joi.string()).required()
 });
 
-// In-memory "database" for crafts
 let crafts = [
     {
         "name": "Beaded JellyFish",
@@ -293,14 +296,14 @@ app.get("/api/crafts", (req, res) => {
 });
 
 app.post("/api/crafts", upload.single('craftImage'), (req, res) => {
-    const validationResult = craftSchema.validate(req.body);
+    const validationResult = craftSchema.validate(req.body, { convert: false });
     if (validationResult.error) {
         return res.status(400).send(validationResult.error.details[0].message);
     }
 
     const newCraft = {
         name: req.body.craftName,
-        image: req.file.filename,
+        image: req.file ? req.file.filename : '',
         description: req.body.craftDescription,
         supplies: req.body.supplies
     };
@@ -309,6 +312,9 @@ app.post("/api/crafts", upload.single('craftImage'), (req, res) => {
     res.status(201).send(newCraft);
 });
 
-app.listen(3001, () => {
-    console.log("Server is listening on port 3001");
+app.use('/uploads', express.static(uploadDir));
+
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
 });
